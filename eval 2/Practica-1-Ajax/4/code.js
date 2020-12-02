@@ -1,71 +1,80 @@
 window.onload = function() {
     xhr = false;
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
-    xml_to_page('file.xml')
-        //addEvent(button,"click",()=>{xml_to_page('file.xml')})
-    bands = document.getElementById('bands')
-    addEvent(bands, "change")
+    xml_to_page('file.xml','ARTIST') 
+    //Cambiando el parametro "tagName" cambia el factor de busqueda
+    //ej: xml_to_page('file.xml','TITLE') mostraría la información por los titulos de los albumes
 }
 
-function xml_to_page(path) {
+//Abre el archivo, establece las opciones del form y les añade eventos
+function xml_to_page(path,tagName) {
     if (xhr) {
         xhr.open("GET", path)
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                nodeDigger(xhr.responseXML, "CD", "Red")
-                    //console.log(xhr.responseXML.getElementsByTagName("CD"))
+                setInputOption(xhr.responseXML.getElementsByTagName(tagName))
+                
+                bands.addEventListener("change",function(){
+                    printInfo(xhr.responseXML,tagName,this.value)
+                })
             }
-        }
+        }   
         xhr.send(null);
     }
 }
 
-function nodeDigger(file, wraper, value) {
+//Establece las opciones del form basandose en el tagname pasado por parámetro
+function setInputOption(tagName){
+    for (const option of tagName) {
+        bands.append(create_element("option","",option.textContent))
+    }
+}
 
-    let attrs = {}
-    let t = file.getElementsByTagName("TITLE")
-    for (const child of t) {
+//Crea un elemento por cada clave de getProperties con dicha clave y su valor
+//y lo añade al elemento del html elegido. En este caso '#attributes'
+function printInfo(file,tagName,value){ 
+    let container = document.getElementById('attributes')
+    while(container.firstChild){container.removeChild(container.firstChild)}
+
+    matrix = getProperties(file,tagName,value)
+    for (const [key,value] of matrix.entries()) {
+        console.log(key)
+        if(key !== tagName){
+            element = create_element('div',{"class":"list-group-item"},document.createTextNode(key+" :"+value))
+            container.append(element)
+        }
+    }
+}
+
+//Devuelve un map con los atributos del cd con un texto = "value"
+//ej: Para tagName = ARTIST; y value = Michael Jackson; 
+//    devolverá un map con todos los elementos "sibling" de <ARTIST> 
+//    del cd que contenga el artista Michael Jackson 
+function getProperties(file,tagName,value) {
+    let attrs = new Map()
+    let op = file.getElementsByTagName(tagName)
+    for (const child of op) {
         if (child.textContent === value) {
             let parent = child.parentNode
-            for (index = 1; index < parent.childNodes.length; index++) {
+            for (index = 0  ; index < parent.childNodes.length; index++) {
                 if (parent.childNodes[index].nodeType != 3) {
-                    attrs[parent.childNodes[index].tagName] = parent.childNodes[index].textContent
+                    attrs.set(parent.childNodes[index].tagName,parent.childNodes[index].textContent)
                 }
-
             }
         }
     }
-    console.log(attrs)
+    return attrs
 }
 
-/*for (const cd of Array.from(file.getElementsByTagName("CD"))) {
-        cd.childNodes[0]
-        bands.append(create_element("option","",title.childNodes[0].nodeValue.toString()))
-    }*/
-
-
-function getNextSibling(node) {
-    let x = node.nextSibling
-    while (x.nodeType != 1) {
-        x = x.nextSibling
-    }
-    return x
-}
-
-function addEvent(element, event, foo) {
-    addEventListener ? element.addEventListener(event, foo) : element.attachEvent("on" + event, foo)
-}
-
-
-function create_element(type, attrs, child) {
-    new_elem = document.createElement(type)
+function create_element(tag,attrs,child) {
+    new_elem = document.createElement(tag)
+    setAttributes(new_elem,attrs)
     new_elem.append(child)
-    setAttributes(new_elem, attrs)
     return new_elem
 }
 
 function setAttributes(elem, attrs) {
-    for (var key in attrs) {
-        elem.setAttribute(key, attrs[key]);
+    for(var key in attrs) {
+      elem.setAttribute(key, attrs[key]);
     }
 }
