@@ -1,46 +1,52 @@
-window.onload = function () {
+window.onload = function() {
     xhr = false;
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
     xml_to_page('file.xml')
-    //addEvent(button,"click",()=>{xml_to_page('file.xml')})
+        //addEvent(button,"click",()=>{xml_to_page('file.xml')})
     bands = document.getElementById('bands')
-    addEvent(bands,"change")
+    addEvent(bands, "change")
 }
 
 function xml_to_page(path) {
     if (xhr) {
         xhr.open("GET", path)
-        xhr.onreadystatechange = function () {
+        xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                nodeDigger(xhr.responseXML,"CD","Red")
-                //console.log(xhr.responseXML.getElementsByTagName("CD"))
+                nodeDigger(xhr.responseXML, "CD", "Red")
+                    //console.log(xhr.responseXML.getElementsByTagName("CD"))
             }
         }
         xhr.send(null);
     }
-}   
+}
 
-function nodeDigger(file,wraper,value){
-    
+function nodeDigger(file, wraper, value) {
+
     let attrs = {}
     let t = file.getElementsByTagName("TITLE")
     for (const child of t) {
-        if(child.textContent === value){
+        if (child.textContent === value) {
             let parent = child.parentNode
-            for (index =1; index<parent.childNodes.length;index++) {
-                if(parent.childNodes[index].nodeType!=3){
+            for (index = 1; index < parent.childNodes.length; index++) {
+                if (parent.childNodes[index].nodeType != 3) {
                     attrs[parent.childNodes[index].tagName] = parent.childNodes[index].textContent
                 }
-               
+
             }
         }
     }
     console.log(attrs)
 }
 
-function getNextSibling(node){
+/*for (const cd of Array.from(file.getElementsByTagName("CD"))) {
+        cd.childNodes[0]
+        bands.append(create_element("option","",title.childNodes[0].nodeValue.toString()))
+    }*/
+
+
+function getNextSibling(node) {
     let x = node.nextSibling
-    while(x.nodeType!=1){
+    while (x.nodeType != 1) {
         x = x.nextSibling
     }
     return x
