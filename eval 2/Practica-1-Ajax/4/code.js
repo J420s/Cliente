@@ -3,6 +3,8 @@ window.onload = function () {
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
     xml_to_page('file.xml')
     //addEvent(button,"click",()=>{xml_to_page('file.xml')})
+    bands = document.getElementById('bands')
+    addEvent(bands,"change")
 }
 
 function xml_to_page(path) {
@@ -10,44 +12,38 @@ function xml_to_page(path) {
         xhr.open("GET", path)
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                nodeDigger(xhr.responseXML)
+                nodeDigger(xhr.responseXML,"CD","Red")
+                //console.log(xhr.responseXML.getElementsByTagName("CD"))
             }
         }
         xhr.send(null);
     }
-}
+}   
 
-function xmlToCard(file) {
-    /*for (const cd of Array.from(file.getElementsByTagName("CD"))) {
-        cd.childNodes[0]
-        bands.append(create_element("option","",title.childNodes[0].nodeValue.toString()))
-    }*/
-
-}
-
-function nodeDigger(file) {
+function nodeDigger(file,wraper,value){
+    
     let attrs = {}
-    console.log("main", file.childNodes[0])
-
-    for (const child of file.childNodes[0].childNodes) {
-        console.log("child", child.tagName)
-    }
-
-    return attrs
-
-
-    /*for (const child of node.childNodes) {
-        if(!child.childNodes[0]){
-            attrs[child.tagName] = child.nodeValue
-        }
-        else{
-            for (const kid of child.childNodes) {
-                if(!kid.childNodes[0]){
-                    attrs[kid.tagName] = kid.nodeValue
-                }else return "Too many nodes"
+    let t = file.getElementsByTagName("TITLE")
+    for (const child of t) {
+        if(child.textContent === value){
+            let parent = child.parentNode
+            for (index =1; index<parent.childNodes.length;index++) {
+                if(parent.childNodes[index].nodeType!=3){
+                    attrs[parent.childNodes[index].tagName] = parent.childNodes[index].textContent
+                }
+               
             }
         }
-    }*/
+    }
+    console.log(attrs)
+}
+
+function getNextSibling(node){
+    let x = node.nextSibling
+    while(x.nodeType!=1){
+        x = x.nextSibling
+    }
+    return x
 }
 
 function addEvent(element, event, foo) {
