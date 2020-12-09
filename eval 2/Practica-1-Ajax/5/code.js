@@ -1,4 +1,4 @@
-xhr = null;
+let xhr = null;
 window.onload = function() {
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")  
     button = document.getElementById('mybutton')
