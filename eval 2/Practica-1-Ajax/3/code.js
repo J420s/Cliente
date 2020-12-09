@@ -1,7 +1,7 @@
+let xhr = null; 
 window.onload = function () {
-    xhr = false; 
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
-    button = document.getElementById('btn-btn')
+    let button = document.getElementById('btn-btn')
     addEvent(button,"click",()=>{swapIMG('img/ladyonstage.jpg','image')})
 }
 

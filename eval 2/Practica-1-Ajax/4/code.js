@@ -1,6 +1,7 @@
+let xhr = null;
 window.onload = function() {
-    xhr = false;
     xhr = new XMLHttpRequest() || new ActiveXObject("Microsoft.XMLHTTP")
+    
     xml_to_page('file.xml','ARTIST') 
     //Cambiando el parametro "tagName" cambia el factor de busqueda
     //ej: xml_to_page('file.xml','TITLE') mostraría la información por los titulos de los albumes
