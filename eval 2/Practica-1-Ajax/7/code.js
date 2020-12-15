@@ -22,7 +22,3 @@ function loadPHP(path,box,arg) {
         xhr.send("null");
     }
 }
-
-function addEvent(element,event,foo){
-    addEventListener ? element.addEventListener(event,foo) : element.attachEvent("on"+event,foo)
-}
